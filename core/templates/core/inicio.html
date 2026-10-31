@@ -1,14 +1,162 @@
+
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio | Web Ter</title>
+    <meta name="description" content="Web Ter: plataforma de rehabilitación física desde casa.">
+    <title>Web Ter | Rehabilitación en casa</title>
+
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
 </head>
+
 <body>
 
-    <h1>Bienvenido a Web Ter</h1>
-    <p>Movimiento, bienestar y accesibilidad para todos.</p>
+    <!-- Navegación -->
+    <header class="navbar">
+        <a href="/" class="logo">web<span>ter.</span></a>
+
+        <nav class="nav-links">
+            <a href="#inicio">Inicio</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#nosotros">Nosotros</a>
+        </nav>
+
+        <div class="nav-actions">
+            <a href="#" class="login-link">Iniciar sesión</a>
+            <a href="#" class="btn btn-primary">Comenzar</a>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- Presentación principal -->
+        <section class="hero" id="inicio">
+
+            <div class="hero-content">
+
+                <span class="eyebrow">
+                    REHABILITACIÓN FÍSICA INTELIGENTE
+                </span>
+
+                <h1>
+                    Tu recuperación,<br>
+                    a tu <span>propio ritmo.</span>
+                </h1>
+
+                <p>
+                    Una nueva forma de acompañar tu rehabilitación física
+                    desde casa, con ejercicios adaptados, seguimiento
+                    inteligente y tecnología accesible.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="#" class="btn btn-primary">
+                        Comenzar ahora →
+                    </a>
+
+                    <a href="#servicios" class="btn btn-secondary">
+                        Conocer más
+                    </a>
+                </div>
+
+                <div class="hero-note">
+                    <span class="status-dot"></span>
+                    Tecnología y acompañamiento para tu bienestar.
+                </div>
+
+            </div>
+
+            <div class="hero-visual">
+                <div class="visual-card">
+                    <div class="visual-header">
+                        <span>Tu espacio de bienestar</span>
+                        <span class="visual-icon">✦</span>
+                    </div>
+
+                    <div class="visual-circle">
+                        <span>web</span>
+                        <strong>ter.</strong>
+                    </div>
+
+                    <h3>Muévete con confianza</h3>
+                    <p>Pequeños avances, grandes logros.</p>
+
+                    <div class="visual-progress">
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Servicios -->
+        <section class="services" id="servicios">
+
+            <div class="section-heading">
+                <span class="eyebrow">NUESTRA PLATAFORMA</span>
+                <h2>Todo lo que necesitas para avanzar.</h2>
+                <p>
+                    Herramientas diseñadas para acompañarte
+                    durante tu proceso de rehabilitación.
+                </p>
+            </div>
+
+            <div class="service-grid">
+
+                <article class="service-card">
+                    <div class="service-icon">◎</div>
+                    <h3>Ejercicios adaptados</h3>
+                    <p>
+                        Accede a un catálogo de ejercicios organizados
+                        según tus necesidades y capacidades.
+                    </p>
+                </article>
+
+                <article class="service-card">
+                    <div class="service-icon">✳</div>
+                    <h3>Guía inteligente</h3>
+                    <p>
+                        Herramientas tecnológicas que ayudan a observar
+                        y evaluar tus movimientos durante los ejercicios.
+                    </p>
+                </article>
+
+                <article class="service-card">
+                    <div class="service-icon">↗</div>
+                    <h3>Seguimiento personal</h3>
+                    <p>
+                        Consulta tu evolución, registra tus avances
+                        y reconoce cada logro.
+                    </p>
+                </article>
+
+            </div>
+
+        </section>
+
+        <!-- Nosotros -->
+        <section class="about" id="nosotros">
+            <div>
+                <span class="eyebrow">MOVIMIENTO PARA TODOS</span>
+                <h2>La tecnología también puede acercarnos al bienestar.</h2>
+            </div>
+
+            <p>
+                Web Ter busca facilitar el acceso a herramientas
+                de rehabilitación física desde casa, integrando
+                tecnología, accesibilidad y acompañamiento profesional.
+            </p>
+        </section>
+
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="footer">
+        <a href="/" class="logo">web<span>ter.</span></a>
+        <p>© 2026 Web Ter. Todos los derechos reservados.</p>
+    </footer>
 
 </body>
 </html>
