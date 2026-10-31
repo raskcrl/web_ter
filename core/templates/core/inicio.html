@@ -1,38 +1,63 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Web Ter: plataforma de rehabilitación física desde casa.">
+    <meta name="description" content="Web Ter: plataforma de apoyo a la rehabilitación física desde casa, con ejercicios adaptados, guía inteligente y seguimiento personal.">
+    <meta name="theme-color" content="#ffffff">
     <title>Web Ter | Rehabilitación en casa</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
 </head>
 
 <body>
 
+    <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
+
     <!-- Navegación -->
     <header class="navbar">
-        <a href="/" class="logo">web<span>ter.</span></a>
+        <a href="{% url 'inicio' %}" class="logo" aria-label="Web Ter, ir al inicio">
+            web<span>ter.</span>
+        </a>
 
-        <nav class="nav-links">
-            <a href="#inicio">Inicio</a>
+        <nav class="nav-links" aria-label="Navegación principal">
+            <a href="#inicio" aria-current="page">Inicio</a>
             <a href="#servicios">Servicios</a>
             <a href="#nosotros">Nosotros</a>
         </nav>
 
         <div class="nav-actions">
-            <a href="#" class="login-link">Iniciar sesión</a>
-            <a href="#" class="btn btn-primary">Comenzar</a>
+            <button
+                type="button"
+                class="link-button login-link"
+                aria-disabled="true"
+                aria-describedby="aviso-pendientes"
+                data-pendiente="inicio-sesion"
+                title="Inicio de sesión disponible próximamente"
+            >
+                Iniciar sesión
+            </button>
+
+            <button
+                type="button"
+                class="btn btn-primary"
+                aria-disabled="true"
+                aria-describedby="aviso-pendientes"
+                data-pendiente="registro"
+                title="Registro disponible próximamente"
+            >
+                Comenzar
+            </button>
         </div>
     </header>
 
-    <main>
+    <main id="contenido" tabindex="-1">
 
         <!-- Presentación principal -->
-        <section class="hero" id="inicio">
+        <section class="hero" id="inicio" aria-labelledby="hero-title">
 
             <div class="hero-content">
 
@@ -40,7 +65,7 @@
                     REHABILITACIÓN FÍSICA INTELIGENTE
                 </span>
 
-                <h1>
+                <h1 id="hero-title">
                     Tu recuperación,<br>
                     a tu <span>propio ritmo.</span>
                 </h1>
@@ -52,23 +77,30 @@
                 </p>
 
                 <div class="hero-buttons">
-                    <a href="#" class="btn btn-primary">
-                        Comenzar ahora →
-                    </a>
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        aria-disabled="true"
+                        aria-describedby="aviso-pendientes"
+                        data-pendiente="registro"
+                        title="Registro disponible próximamente"
+                    >
+                        Comenzar ahora
+                    </button>
 
                     <a href="#servicios" class="btn btn-secondary">
                         Conocer más
                     </a>
                 </div>
 
-                <div class="hero-note">
-                    <span class="status-dot"></span>
-                    Tecnología y acompañamiento para tu bienestar.
-                </div>
+                <p class="hero-note" id="aviso-pendientes">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    El registro y el inicio de sesión estarán disponibles próximamente.
+                </p>
 
             </div>
 
-            <div class="hero-visual">
+            <div class="hero-visual" aria-hidden="true">
                 <div class="visual-card">
                     <div class="visual-header">
                         <span>Tu espacio de bienestar</span>
@@ -92,11 +124,11 @@
         </section>
 
         <!-- Servicios -->
-        <section class="services" id="servicios">
+        <section class="services" id="servicios" aria-labelledby="servicios-title">
 
             <div class="section-heading">
                 <span class="eyebrow">NUESTRA PLATAFORMA</span>
-                <h2>Todo lo que necesitas para avanzar.</h2>
+                <h2 id="servicios-title">Todo lo que necesitas para avanzar.</h2>
                 <p>
                     Herramientas diseñadas para acompañarte
                     durante tu proceso de rehabilitación.
@@ -106,7 +138,7 @@
             <div class="service-grid">
 
                 <article class="service-card">
-                    <div class="service-icon">◎</div>
+                    <div class="service-icon" aria-hidden="true">◎</div>
                     <h3>Ejercicios adaptados</h3>
                     <p>
                         Accede a un catálogo de ejercicios organizados
@@ -115,16 +147,17 @@
                 </article>
 
                 <article class="service-card">
-                    <div class="service-icon">✳</div>
+                    <div class="service-icon" aria-hidden="true">✳</div>
                     <h3>Guía inteligente</h3>
                     <p>
-                        Herramientas tecnológicas que ayudan a observar
-                        y evaluar tus movimientos durante los ejercicios.
+                        La visión por computador te ayuda a observar
+                        la ejecución de tus movimientos durante los ejercicios.
                     </p>
+                    <p class="service-note">Uso opcional y con consentimiento.</p>
                 </article>
 
                 <article class="service-card">
-                    <div class="service-icon">↗</div>
+                    <div class="service-icon" aria-hidden="true">↗</div>
                     <h3>Seguimiento personal</h3>
                     <p>
                         Consulta tu evolución, registra tus avances
@@ -137,25 +170,59 @@
         </section>
 
         <!-- Nosotros -->
-        <section class="about" id="nosotros">
-            <div>
+        <section class="about" id="nosotros" aria-labelledby="nosotros-title">
+
+            <div class="about-intro">
                 <span class="eyebrow">MOVIMIENTO PARA TODOS</span>
-                <h2>La tecnología también puede acercarnos al bienestar.</h2>
+                <h2 id="nosotros-title">La tecnología también puede acercarnos al bienestar.</h2>
+                <p>
+                    Web Ter busca facilitar el acceso a herramientas
+                    de rehabilitación física desde casa, integrando
+                    tecnología, accesibilidad y acompañamiento profesional.
+                </p>
             </div>
 
-            <p>
-                Web Ter busca facilitar el acceso a herramientas
-                de rehabilitación física desde casa, integrando
-                tecnología, accesibilidad y acompañamiento profesional.
-            </p>
+            <div class="about-details">
+                <ul class="about-points">
+                    <li>Ejercicios pensados para adaptarse a distintas capacidades y ritmos.</li>
+                    <li>Herramientas de visión por computador con consentimiento y privacidad.</li>
+                    <li>Seguimiento cercano para reconocer avances, sin reemplazar la valoración profesional.</li>
+                </ul>
+
+                <p class="about-note">
+                    Web Ter es una plataforma de apoyo a la rehabilitación física.
+                    No realiza diagnósticos ni sustituye la atención de un profesional de la salud.
+                </p>
+            </div>
+
         </section>
 
     </main>
 
     <!-- Pie de página -->
     <footer class="footer">
-        <a href="/" class="logo">web<span>ter.</span></a>
-        <p>© 2026 Web Ter. Todos los derechos reservados.</p>
+        <div class="footer-brand">
+            <a href="{% url 'inicio' %}" class="logo" aria-label="Web Ter, ir al inicio">
+                web<span>ter.</span>
+            </a>
+            <p>
+                Rehabilitación física desde casa, con tecnología accesible
+                y acompañamiento para cada etapa.
+            </p>
+        </div>
+
+        <nav class="footer-nav" aria-label="Navegación del pie de página">
+            <a href="#inicio">Inicio</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#nosotros">Nosotros</a>
+        </nav>
+
+        <p class="footer-disclaimer">
+            Plataforma de apoyo a la rehabilitación física. No sustituye
+            la valoración, el diagnóstico ni el tratamiento de un profesional de la salud.
+        </p>
+
+        <p class="footer-copy">© 2026 Web Ter. Todos los derechos reservados.</p>
     </footer>
 
 </body>
