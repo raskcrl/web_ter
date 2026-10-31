@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
      # Aplicaciones propias
     'core',
+    'usuarios.apps.UsuariosConfig',
 ]
 
 MIDDLEWARE = [
@@ -114,13 +115,21 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_TZ = True
+
+
+# Autenticación
+# https://docs.djangoproject.com/en/5.0/ref/settings/#auth
+
+LOGIN_URL = 'usuarios:login'
+LOGIN_REDIRECT_URL = 'usuarios:perfil'
+LOGOUT_REDIRECT_URL = 'inicio'
 
 
 # Static files (CSS, JavaScript, Images)

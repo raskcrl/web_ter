@@ -1,0 +1,30 @@
+{% extends "usuarios/base_auth.html" %}
+
+{% block title %}Crear cuenta | Web Ter{% endblock %}
+
+{% block eyebrow %}COMIENZA TU PROCESO{% endblock %}
+{% block heading %}Crea tu cuenta y avanza a tu propio ritmo.{% endblock %}
+{% block lead %}
+    Un espacio pensado para acompañar tu rehabilitación física desde casa,
+    con herramientas claras y accesibles.
+{% endblock %}
+
+{% block card_eyebrow %}REGISTRO{% endblock %}
+{% block card_title %}Crear una cuenta{% endblock %}
+{% block card_subtitle %}Completa tus datos para empezar a usar Web Ter.{% endblock %}
+
+{% block content %}
+    <form method="post" class="auth-form" novalidate>
+        {% csrf_token %}
+        {% include "usuarios/_form_fields.html" with form=form %}
+
+        <button type="submit" class="btn btn-primary auth-submit">
+            Crear cuenta
+        </button>
+    </form>
+
+    <p class="auth-alt">
+        ¿Ya tienes una cuenta?
+        <a href="{% url 'usuarios:login' %}">Inicia sesión</a>
+    </p>
+{% endblock %}

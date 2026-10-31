@@ -196,6 +196,11 @@ ul {
     transition: color 0.2s ease;
 }
 
+.login-link {
+    display: inline-flex;
+    align-items: center;
+}
+
 /* BOTONES */
 
 .btn {

@@ -30,27 +30,13 @@
         </nav>
 
         <div class="nav-actions">
-            <button
-                type="button"
-                class="link-button login-link"
-                aria-disabled="true"
-                aria-describedby="aviso-pendientes"
-                data-pendiente="inicio-sesion"
-                title="Inicio de sesión disponible próximamente"
-            >
+            <a href="{% url 'usuarios:login' %}" class="link-button login-link">
                 Iniciar sesión
-            </button>
+            </a>
 
-            <button
-                type="button"
-                class="btn btn-primary"
-                aria-disabled="true"
-                aria-describedby="aviso-pendientes"
-                data-pendiente="registro"
-                title="Registro disponible próximamente"
-            >
+            <a href="{% url 'usuarios:registro' %}" class="btn btn-primary">
                 Comenzar
-            </button>
+            </a>
         </div>
     </header>
 
@@ -77,26 +63,14 @@
                 </p>
 
                 <div class="hero-buttons">
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        aria-disabled="true"
-                        aria-describedby="aviso-pendientes"
-                        data-pendiente="registro"
-                        title="Registro disponible próximamente"
-                    >
+                    <a href="{% url 'usuarios:registro' %}" class="btn btn-primary">
                         Comenzar ahora
-                    </button>
+                    </a>
 
                     <a href="#servicios" class="btn btn-secondary">
                         Conocer más
                     </a>
                 </div>
-
-                <p class="hero-note" id="aviso-pendientes">
-                    <span class="status-dot" aria-hidden="true"></span>
-                    El registro y el inicio de sesión estarán disponibles próximamente.
-                </p>
 
             </div>
 

@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>{% block title %}Web Ter{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/autenticacion.css' %}">
+</head>
+
+<body class="auth-body">
+
+    <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
+
+    <header class="navbar auth-navbar">
+        <a href="{% url 'inicio' %}" class="logo" aria-label="Web Ter, ir al inicio">
+            web<span>ter.</span>
+        </a>
+
+        <nav class="auth-nav" aria-label="Navegación de cuenta">
+            {% if user.is_authenticated %}
+                <a href="{% url 'usuarios:perfil' %}" class="auth-nav-link">Mi perfil</a>
+                <form method="post" action="{% url 'usuarios:logout' %}" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="link-button">Cerrar sesión</button>
+                </form>
+            {% else %}
+                <a href="{% url 'usuarios:login' %}" class="auth-nav-link">Iniciar sesión</a>
+                <a href="{% url 'usuarios:registro' %}" class="btn btn-primary auth-nav-cta">
+                    Crear cuenta
+                </a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main id="contenido" class="auth-main" tabindex="-1">
+        <div class="auth-layout">
+
+            <aside class="auth-aside">
+                <span class="eyebrow">{% block eyebrow %}WEB TER{% endblock %}</span>
+                <h1>{% block heading %}{% endblock %}</h1>
+                <p class="auth-lead">{% block lead %}{% endblock %}</p>
+
+                <ul class="auth-benefits">
+                    {% block benefits %}
+                        <li>Ejercicios adaptados a tu ritmo y capacidades.</li>
+                        <li>Seguimiento cercano de tus avances.</li>
+                        <li>Tecnología accesible para acompañarte en casa.</li>
+                    {% endblock %}
+                </ul>
+
+                <a href="{% url 'inicio' %}" class="auth-back">
+                    <span aria-hidden="true">←</span> Volver al inicio
+                </a>
+            </aside>
+
+            <section class="auth-card" aria-labelledby="auth-card-title">
+                <div class="auth-card-head">
+                    <span class="eyebrow">{% block card_eyebrow %}TU CUENTA{% endblock %}</span>
+                    <h2 id="auth-card-title">{% block card_title %}{% endblock %}</h2>
+                    <p>{% block card_subtitle %}{% endblock %}</p>
+                </div>
+
+                {% if messages %}
+                    <div class="auth-messages" aria-live="polite">
+                        {% for message in messages %}
+                            <p class="auth-message auth-message-{{ message.tags }}">{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="auth-footer">
+        <p>© 2026 Web Ter. Todos los derechos reservados.</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+{% extends "usuarios/base_auth.html" %}
+
+{% block title %}Iniciar sesión | Web Ter{% endblock %}
+
+{% block eyebrow %}BIENVENIDO DE NUEVO{% endblock %}
+{% block heading %}Tu espacio de bienestar te espera.{% endblock %}
+{% block lead %}
+    Inicia sesión para consultar tu perfil y continuar con tu proceso
+    de rehabilitación desde casa.
+{% endblock %}
+
+{% block card_eyebrow %}ACCESO{% endblock %}
+{% block card_title %}Iniciar sesión{% endblock %}
+{% block card_subtitle %}Ingresa tu nombre de usuario y contraseña.{% endblock %}
+
+{% block content %}
+    <form method="post" class="auth-form" novalidate>
+        {% csrf_token %}
+        {% include "usuarios/_form_fields.html" with form=form %}
+
+        <button type="submit" class="btn btn-primary auth-submit">
+            Iniciar sesión
+        </button>
+    </form>
+
+    <p class="auth-alt">
+        ¿Aún no tienes una cuenta?
+        <a href="{% url 'usuarios:registro' %}">Crear cuenta</a>
+    </p>
+{% endblock %}
