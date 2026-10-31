@@ -1,8 +1,42 @@
+import os
+import shutil
+import tempfile
+from io import BytesIO
+
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase, override_settings
 from django.urls import reverse
+from PIL import Image
+
+from .models import PerfilUsuario, TAMANO_MAXIMO_FOTO
 
 User = get_user_model()
+
+
+def crear_imagen(nombre="foto.png", color="green"):
+    buffer = BytesIO()
+    Image.new("RGB", (10, 10), color).save(buffer, format="PNG")
+    return SimpleUploadedFile(
+        nombre,
+        buffer.getvalue(),
+        content_type="image/png",
+    )
+
+
+def crear_imagen_grande():
+    ancho = alto = 1600
+    buffer = BytesIO()
+    Image.frombytes(
+        "RGB",
+        (ancho, alto),
+        os.urandom(ancho * alto * 3),
+    ).save(buffer, format="PNG")
+    return SimpleUploadedFile(
+        "grande.png",
+        buffer.getvalue(),
+        content_type="image/png",
+    )
 
 
 class RegistroTests(TestCase):
@@ -176,6 +210,20 @@ class CierreSesionTests(TestCase):
 
         self.assertEqual(response.status_code, 405)
 
+    def test_tras_cerrar_sesion_no_se_puede_acceder_al_perfil(self):
+        self.client.force_login(self.user)
+
+        self.client.post(self.url)
+
+        perfil_url = reverse("usuarios:perfil")
+        response = self.client.get(perfil_url)
+
+        self.assertRedirects(
+            response,
+            f"{reverse('usuarios:login')}?next={perfil_url}",
+        )
+        self.assertNotIn("_auth_user_id", self.client.session)
+
 
 class PerfilTests(TestCase):
     def setUp(self):
@@ -205,6 +253,13 @@ class PerfilTests(TestCase):
         self.assertTemplateUsed(response, "usuarios/perfil.html")
         self.assertContains(response, "laura")
         self.assertContains(response, "laura@example.com")
+
+    def test_perfil_no_se_almacena_en_cache(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(self.url)
+
+        self.assertIn("no-store", response["Cache-Control"])
 
     def test_permite_editar_nombre_apellido_y_correo(self):
         self.client.force_login(self.user)
@@ -260,4 +315,281 @@ class PerfilTests(TestCase):
 
         self.assertRedirects(response, self.url)
         self.user.refresh_from_db()
+        self.assertEqual(self.user.email, "laura@example.com")
+
+
+class PerfilFotoTests(TestCase):
+    def setUp(self):
+        self.media_root = tempfile.mkdtemp()
+        self.override_media = override_settings(MEDIA_ROOT=self.media_root)
+        self.override_media.enable()
+        self.addCleanup(self.override_media.disable)
+        self.addCleanup(shutil.rmtree, self.media_root, ignore_errors=True)
+
+        self.user = User.objects.create_user(
+            username="laura",
+            email="laura@example.com",
+            password="ClaveSegura2026!",
+        )
+        self.client.force_login(self.user)
+        self.url = reverse("usuarios:perfil_foto")
+        self.perfil_url = reverse("usuarios:perfil")
+
+    def test_muestra_avatar_predeterminado_sin_foto(self):
+        response = self.client.get(self.perfil_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "avatar-default.svg")
+
+    def test_sube_foto_valida(self):
+        response = self.client.post(self.url, {"foto": crear_imagen()})
+
+        self.assertRedirects(response, self.perfil_url)
+        perfil = PerfilUsuario.objects.get(usuario=self.user)
+        self.assertTrue(perfil.foto)
+        self.assertTrue(os.path.exists(perfil.foto.path))
+
+        response = self.client.get(self.perfil_url)
+        self.assertContains(response, perfil.foto.url)
+        self.assertNotContains(response, "avatar-default.svg")
+
+    def test_rechaza_extension_no_permitida(self):
+        response = self.client.post(
+            self.url,
+            {"foto": crear_imagen("foto.txt")},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("foto", response.context["foto_form"].errors)
+        self.assertFalse(
+            PerfilUsuario.objects.filter(usuario=self.user).exists()
+        )
+
+    def test_rechaza_contenido_que_no_es_imagen(self):
+        archivo = SimpleUploadedFile(
+            "foto.png",
+            b"esto no es una imagen",
+            content_type="image/png",
+        )
+
+        response = self.client.post(self.url, {"foto": archivo})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("foto", response.context["foto_form"].errors)
+        self.assertFalse(
+            PerfilUsuario.objects.filter(usuario=self.user).exists()
+        )
+
+    def test_rechaza_archivo_demasiado_grande(self):
+        archivo = crear_imagen_grande()
+        self.assertGreater(archivo.size, TAMANO_MAXIMO_FOTO)
+
+        response = self.client.post(self.url, {"foto": archivo})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("foto", response.context["foto_form"].errors)
+        self.assertFalse(
+            PerfilUsuario.objects.filter(usuario=self.user).exists()
+        )
+
+    def test_cambia_foto_y_elimina_archivo_anterior(self):
+        self.client.post(self.url, {"foto": crear_imagen(color="red")})
+        perfil = PerfilUsuario.objects.get(usuario=self.user)
+        nombre_anterior = perfil.foto.name
+        ruta_anterior = perfil.foto.path
+
+        response = self.client.post(
+            self.url,
+            {"foto": crear_imagen("nueva.png", color="blue")},
+        )
+
+        self.assertRedirects(response, self.perfil_url)
+        perfil.refresh_from_db()
+        self.assertNotEqual(perfil.foto.name, nombre_anterior)
+        self.assertFalse(os.path.exists(ruta_anterior))
+        self.assertTrue(os.path.exists(perfil.foto.path))
+
+    def test_quita_foto_y_muestra_avatar_predeterminado(self):
+        self.client.post(self.url, {"foto": crear_imagen()})
+        perfil = PerfilUsuario.objects.get(usuario=self.user)
+        ruta_anterior = perfil.foto.path
+
+        response = self.client.post(self.url, {"eliminar_foto": "on"})
+
+        self.assertRedirects(response, self.perfil_url)
+        perfil.refresh_from_db()
+        self.assertFalse(perfil.foto)
+        self.assertFalse(os.path.exists(ruta_anterior))
+
+        response = self.client.get(self.perfil_url)
+        self.assertContains(response, "avatar-default.svg")
+
+    def test_usuario_anonimo_no_puede_subir_foto(self):
+        self.client.logout()
+
+        response = self.client.post(self.url, {"foto": crear_imagen()})
+
+        self.assertRedirects(
+            response,
+            f"{reverse('usuarios:login')}?next={self.url}",
+        )
+        self.assertFalse(
+            PerfilUsuario.objects.filter(usuario=self.user).exists()
+        )
+
+    def test_get_redirige_al_perfil(self):
+        response = self.client.get(self.url)
+
+        self.assertRedirects(response, self.perfil_url)
+
+
+class CambioPasswordTests(TestCase):
+    def setUp(self):
+        self.password = "ClaveSegura2026!"
+        self.user = User.objects.create_user(
+            username="laura",
+            email="laura@example.com",
+            password=self.password,
+        )
+        self.client.force_login(self.user)
+        self.url = reverse("usuarios:password_change")
+        self.perfil_url = reverse("usuarios:perfil")
+
+    def test_muestra_formulario(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "usuarios/password_change.html")
+        self.assertContains(response, "Contraseña actual")
+
+    def test_cambio_exitoso_mantiene_sesion(self):
+        response = self.client.post(
+            self.url,
+            {
+                "old_password": self.password,
+                "new_password1": "NuevaClave2026!",
+                "new_password2": "NuevaClave2026!",
+            },
+            follow=True,
+        )
+
+        self.assertRedirects(response, self.perfil_url)
+        self.assertContains(
+            response,
+            "Tu contraseña se actualizó correctamente.",
+        )
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("NuevaClave2026!"))
+        self.assertEqual(
+            int(self.client.session["_auth_user_id"]),
+            self.user.pk,
+        )
+        self.assertEqual(self.client.get(self.perfil_url).status_code, 200)
+
+    def test_rechaza_contrasena_actual_incorrecta(self):
+        response = self.client.post(
+            self.url,
+            {
+                "old_password": "incorrecta",
+                "new_password1": "NuevaClave2026!",
+                "new_password2": "NuevaClave2026!",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("old_password", response.context["form"].errors)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password(self.password))
+
+    def test_rechaza_confirmacion_distinta(self):
+        response = self.client.post(
+            self.url,
+            {
+                "old_password": self.password,
+                "new_password1": "NuevaClave2026!",
+                "new_password2": "OtraClave2026!",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("new_password2", response.context["form"].errors)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password(self.password))
+
+    def test_rechaza_contrasena_debil(self):
+        response = self.client.post(
+            self.url,
+            {
+                "old_password": self.password,
+                "new_password1": "12345678",
+                "new_password2": "12345678",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("new_password2", response.context["form"].errors)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password(self.password))
+
+    def test_rechaza_contrasena_similar_al_usuario(self):
+        response = self.client.post(
+            self.url,
+            {
+                "old_password": self.password,
+                "new_password1": "laura2026",
+                "new_password2": "laura2026",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("new_password2", response.context["form"].errors)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password(self.password))
+
+    def test_usuario_anonimo_no_puede_cambiar_contrasena(self):
+        self.client.logout()
+
+        response = self.client.post(
+            self.url,
+            {
+                "old_password": self.password,
+                "new_password1": "NuevaClave2026!",
+                "new_password2": "NuevaClave2026!",
+            },
+        )
+
+        self.assertRedirects(
+            response,
+            f"{reverse('usuarios:login')}?next={self.url}",
+        )
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password(self.password))
+
+
+class PerfilAnonimoTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="laura",
+            email="laura@example.com",
+            password="ClaveSegura2026!",
+            first_name="Laura",
+        )
+        self.url = reverse("usuarios:perfil")
+
+    def test_usuario_anonimo_no_puede_modificar_datos(self):
+        response = self.client.post(
+            self.url,
+            {
+                "first_name": "Modificado",
+                "last_name": "Sin permiso",
+                "email": "otro@example.com",
+            },
+        )
+
+        self.assertRedirects(
+            response,
+            f"{reverse('usuarios:login')}?next={self.url}",
+        )
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, "Laura")
         self.assertEqual(self.user.email, "laura@example.com")

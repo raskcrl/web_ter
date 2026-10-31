@@ -142,6 +142,13 @@ STATICFILES_DIRS = [
 ]
 
 
+# Media files (uploads de usuarios)
+# https://docs.djangoproject.com/en/6.1/topics/files/
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 

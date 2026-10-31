@@ -1,4 +1,5 @@
 {% extends "usuarios/base_auth.html" %}
+{% load static %}
 
 {% block title %}Mi perfil | Web Ter{% endblock %}
 
@@ -21,8 +22,18 @@
 
 {% block content %}
     <div class="profile-summary">
-        <div class="profile-avatar" aria-hidden="true">
-            {{ user.get_username|first|upper }}
+        <div class="profile-avatar">
+            {% if perfil and perfil.foto %}
+                <img
+                    src="{{ perfil.foto.url }}"
+                    alt="Foto de perfil de {{ user.get_username }}"
+                >
+            {% else %}
+                <img
+                    src="{% static 'img/avatar-default.svg' %}"
+                    alt="Avatar predeterminado"
+                >
+            {% endif %}
         </div>
         <div class="profile-identity">
             <span class="profile-label">Nombre de usuario</span>
@@ -39,4 +50,42 @@
             Guardar cambios
         </button>
     </form>
+
+    <section class="profile-section" aria-labelledby="foto-perfil-title">
+        <h3 id="foto-perfil-title" class="profile-section-title">Foto de perfil</h3>
+        <p class="profile-section-text">
+            Sube una fotografía para personalizar tu cuenta. Si no tienes una,
+            verás un avatar predeterminado.
+        </p>
+
+        <form
+            method="post"
+            action="{% url 'usuarios:perfil_foto' %}"
+            enctype="multipart/form-data"
+            class="auth-form"
+            novalidate
+        >
+            {% csrf_token %}
+            {% include "usuarios/_form_fields.html" with form=foto_form %}
+
+            <button type="submit" class="btn btn-secondary auth-submit">
+                Guardar foto
+            </button>
+        </form>
+    </section>
+
+    <section class="profile-section" aria-labelledby="seguridad-title">
+        <h3 id="seguridad-title" class="profile-section-title">Seguridad</h3>
+        <p class="profile-section-text">
+            Actualiza tu contraseña cuando lo necesites. Te pediremos la
+            contraseña actual para proteger tu cuenta.
+        </p>
+
+        <a
+            href="{% url 'usuarios:password_change' %}"
+            class="btn btn-secondary auth-submit"
+        >
+            Cambiar contraseña
+        </a>
+    </section>
 {% endblock %}

@@ -1,6 +1,12 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import (
+    AuthenticationForm,
+    PasswordChangeForm,
+    UserCreationForm,
+)
+
+from .models import PerfilUsuario
 
 User = get_user_model()
 
@@ -163,3 +169,104 @@ class PerfilForm(forms.ModelForm):
             )
 
         return email
+
+
+class FotoPerfilForm(forms.ModelForm):
+    eliminar_foto = forms.BooleanField(
+        label="Eliminar foto actual",
+        required=False,
+        widget=forms.CheckboxInput(attrs={"class": "form-checkbox"}),
+    )
+
+    class Meta:
+        model = PerfilUsuario
+        fields = ("foto",)
+        widgets = {
+            "foto": forms.FileInput(
+                attrs={
+                    "class": "form-input",
+                    "accept": "image/jpeg,image/png,image/webp",
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["foto"].label = "Foto de perfil"
+        self.fields["foto"].help_text = (
+            "Formatos permitidos: JPG, JPEG, PNG o WEBP. Tamaño máximo: 5 MB."
+        )
+
+        tiene_foto_actual = bool(
+            self.instance and self.instance.pk and self.instance.foto
+        )
+
+        if not tiene_foto_actual:
+            self.fields.pop("eliminar_foto", None)
+
+    def clean_foto(self):
+        foto = self.cleaned_data.get("foto")
+
+        if not self.files.get(self.add_prefix("foto")):
+            return None
+
+        return foto
+
+    def clean(self):
+        cleaned_data = super().clean()
+        foto = cleaned_data.get("foto")
+        eliminar_foto = cleaned_data.get("eliminar_foto")
+        tiene_foto_actual = bool(
+            self.instance and self.instance.pk and self.instance.foto
+        )
+
+        if foto and eliminar_foto:
+            raise forms.ValidationError(
+                "Elige entre subir una foto nueva o eliminar la actual."
+            )
+
+        if not foto and not eliminar_foto and not tiene_foto_actual:
+            raise forms.ValidationError(
+                "Selecciona una imagen para actualizar tu foto de perfil."
+            )
+
+        return cleaned_data
+
+
+class CambioPasswordForm(PasswordChangeForm):
+    error_messages = {
+        **PasswordChangeForm.error_messages,
+        "password_incorrect": "La contraseña actual no es correcta.",
+        "password_mismatch": "Las contraseñas nuevas no coinciden.",
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["old_password"].label = "Contraseña actual"
+        self.fields["old_password"].widget.attrs.update(
+            {
+                "class": "form-input",
+                "autocomplete": "current-password",
+                "placeholder": "Tu contraseña actual",
+            }
+        )
+
+        self.fields["new_password1"].label = "Nueva contraseña"
+        self.fields["new_password1"].widget.attrs.update(
+            {
+                "class": "form-input",
+                "autocomplete": "new-password",
+                "placeholder": "Crea una contraseña segura",
+            }
+        )
+
+        self.fields["new_password2"].label = "Confirmar nueva contraseña"
+        self.fields["new_password2"].widget.attrs.update(
+            {
+                "class": "form-input",
+                "autocomplete": "new-password",
+                "placeholder": "Repite la nueva contraseña",
+            }
+        )
