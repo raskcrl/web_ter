@@ -1,0 +1,312 @@
+.rutinas-mensajes {
+    display: grid;
+    gap: 0.65rem;
+    max-width: var(--content-max);
+    margin: 1.25rem auto 0;
+    padding: 0 var(--page-padding);
+}
+
+.rutinas-mensaje {
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.9rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.rutinas-mensaje-success {
+    border-left-color: var(--primary);
+    background: var(--primary-soft);
+}
+
+.rutinas-mensaje-info {
+    border-left-color: var(--muted);
+}
+
+.rutinas-hero-link {
+    margin-top: 1.35rem;
+}
+
+.rutinas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 1.35rem;
+}
+
+.rutina-card {
+    display: flex;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background:
+        radial-gradient(circle at 92% 5%, rgba(31, 107, 88, 0.07), transparent 42%),
+        var(--surface);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.rutina-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+}
+
+.rutina-card-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: clamp(1.25rem, 3vw, 1.65rem);
+}
+
+.rutina-card h3 {
+    margin-top: 0.65rem;
+    font-size: clamp(1.18rem, 2vw, 1.4rem);
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+}
+
+.rutina-card h3 a:hover {
+    color: var(--primary);
+}
+
+.rutina-card-body > p {
+    margin-top: 0.75rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.75;
+}
+
+.rutina-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding: 1.15rem 0;
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.rutina-card .btn {
+    align-self: flex-start;
+}
+
+.rutina-detalle {
+    padding: clamp(1.75rem, 5vw, 3.25rem);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background:
+        radial-gradient(circle at 88% 12%, rgba(31, 107, 88, 0.10), transparent 38%),
+        linear-gradient(135deg, #edf5f1 0%, #f9fbfa 100%);
+}
+
+.rutina-detalle-info {
+    max-width: 52rem;
+}
+
+.rutina-detalle-info h1 {
+    margin-top: 0.85rem;
+    font-size: clamp(2.1rem, 5vw, 3.5rem);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+}
+
+.rutina-descripcion {
+    margin-top: 1.1rem;
+    color: var(--muted);
+    font-size: clamp(0.98rem, 1.3vw, 1.08rem);
+    line-height: 1.85;
+}
+
+.rutina-objetivo {
+    margin-top: 1.5rem;
+    padding: 1rem 1.15rem;
+    border: 1px solid rgba(31, 107, 88, 0.16);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.68);
+}
+
+.rutina-objetivo p {
+    margin-top: 0.45rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.75;
+}
+
+.rutina-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+}
+
+.rutina-guardar-form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.rutina-ejercicios {
+    margin-top: clamp(2rem, 4vw, 3rem);
+}
+
+.rutina-ejercicios-lista {
+    display: grid;
+    gap: 1rem;
+    counter-reset: rutina-ejercicio;
+}
+
+.rutina-ejercicio {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 1rem;
+    padding: clamp(1rem, 3vw, 1.45rem);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+}
+
+.rutina-ejercicio-orden {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--white);
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
+.rutina-ejercicio-body {
+    min-width: 0;
+}
+
+.rutina-ejercicio h3 {
+    margin-top: 0.45rem;
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    line-height: 1.35;
+}
+
+.rutina-ejercicio h3 a:hover {
+    color: var(--primary);
+}
+
+.rutina-ejercicio-body > p {
+    margin-top: 0.6rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.rutina-ejercicio-notas {
+    padding: 0.75rem 0.9rem;
+    border-left: 3px solid var(--primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    background: var(--surface-alt);
+}
+
+.rutina-ejercicio .ejercicio-meta {
+    padding-top: 0.85rem;
+}
+
+.rutinas-guardadas-lista {
+    display: grid;
+    gap: 1rem;
+}
+
+.rutina-guardada {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: clamp(1.2rem, 3vw, 1.65rem);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+}
+
+.rutina-guardada-info {
+    min-width: 0;
+}
+
+.rutina-guardada h3 {
+    margin-top: 0.45rem;
+    font-size: clamp(1.15rem, 2vw, 1.35rem);
+    line-height: 1.3;
+}
+
+.rutina-guardada h3 a:hover {
+    color: var(--primary);
+}
+
+.rutina-guardada-info > p {
+    max-width: 46rem;
+    margin-top: 0.55rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.rutina-guardada-meta {
+    display: inline-block;
+    margin-top: 0.85rem;
+    color: var(--primary);
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.rutina-guardada-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    gap: 0.6rem;
+}
+
+.rutina-guardada-acciones form {
+    display: inline-flex;
+    margin: 0;
+}
+
+@media (max-width: 760px) {
+    .rutina-guardada {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .rutina-guardada-acciones {
+        width: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+    .rutina-ejercicio {
+        grid-template-columns: 1fr;
+    }
+
+    .rutina-ejercicio-orden {
+        width: 2.1rem;
+        height: 2.1rem;
+    }
+
+    .rutina-acciones,
+    .rutina-guardar-form,
+    .rutina-guardada-acciones,
+    .rutina-guardada-acciones form,
+    .rutina-guardada-acciones .btn,
+    .rutina-card .btn {
+        width: 100%;
+    }
+
+    .rutina-acciones .btn,
+    .rutina-guardar-form .btn,
+    .rutina-guardada-acciones .btn {
+        justify-content: center;
+    }
+}

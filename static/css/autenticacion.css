@@ -292,6 +292,33 @@
     background: var(--surface-alt);
 }
 
+.profile-activity-card {
+    justify-content: space-between;
+    gap: 1.25rem;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.profile-activity-card:hover {
+    border-color: var(--primary);
+    background: var(--surface);
+}
+
+.profile-activity-card .profile-identity {
+    gap: 0.3rem;
+}
+
+.profile-activity-card .profile-identity strong {
+    font-size: 1rem;
+}
+
+.profile-activity-arrow {
+    flex-shrink: 0;
+    color: var(--primary);
+    font-size: 1.2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
 .profile-avatar {
     width: 58px;
     height: 58px;

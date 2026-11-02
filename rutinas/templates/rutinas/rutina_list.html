@@ -1,0 +1,81 @@
+{% extends "rutinas/base_rutinas.html" %}
+
+{% block title %}Rutinas | Web Ter{% endblock %}
+
+{% block content %}
+    <section class="catalogo-hero" aria-labelledby="rutinas-title">
+        <div>
+            <span class="eyebrow">RUTINAS DISPONIBLES</span>
+            <h1 id="rutinas-title">Encuentra una secuencia para acompañar tu proceso.</h1>
+            <p>
+                Explora rutinas organizadas por ejercicios y consulta cada
+                propuesta a tu ritmo. Si deseas conservarlas, puedes guardarlas
+                en tu cuenta.
+            </p>
+
+            {% if user.is_authenticated %}
+                <a href="{% url 'rutinas:guardadas' %}" class="btn btn-secondary rutinas-hero-link">
+                    Mis rutinas guardadas
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="catalogo-hero-stat" aria-label="Rutinas disponibles">
+            <strong>{{ total_rutinas }}</strong>
+            <span>rutinas disponibles</span>
+        </div>
+    </section>
+
+    <section class="catalogo-listado" aria-labelledby="listado-rutinas-title">
+        <div class="catalogo-listado-head">
+            <div>
+                <span class="eyebrow">SECUENCIAS</span>
+                <h2 id="listado-rutinas-title">Rutinas para acompañar tu proceso</h2>
+            </div>
+        </div>
+
+        {% if rutinas %}
+            <div class="rutinas-grid">
+                {% for rutina in rutinas %}
+                    {% include "rutinas/_rutina_card.html" with rutina=rutina %}
+                {% endfor %}
+            </div>
+
+            {% if is_paginated %}
+                <nav class="catalogo-paginacion" aria-label="Paginación de rutinas">
+                    {% if page_obj.has_previous %}
+                        <a class="btn btn-secondary" href="?page={{ page_obj.previous_page_number }}">
+                            Anterior
+                        </a>
+                    {% else %}
+                        <span class="btn btn-secondary is-disabled" aria-disabled="true">Anterior</span>
+                    {% endif %}
+
+                    <span class="catalogo-pagina">
+                        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a class="btn btn-secondary" href="?page={{ page_obj.next_page_number }}">
+                            Siguiente
+                        </a>
+                    {% else %}
+                        <span class="btn btn-secondary is-disabled" aria-disabled="true">Siguiente</span>
+                    {% endif %}
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="catalogo-vacio">
+                <span class="catalogo-vacio-icon" aria-hidden="true">◎</span>
+                <h3>Todavía no hay rutinas disponibles</h3>
+                <p>
+                    Estamos preparando nuevas secuencias. Vuelve pronto para
+                    consultar las rutinas publicadas.
+                </p>
+                <a href="{% url 'ejercicios:lista' %}" class="btn btn-primary">
+                    Explorar ejercicios
+                </a>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

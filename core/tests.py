@@ -24,6 +24,8 @@ class NavegacionHeaderTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Iniciar sesión", header)
         self.assertIn("Registrarse", header)
+        self.assertIn("Rutinas", header)
+        self.assertIn(f'href="{reverse("rutinas:lista")}"', header)
         self.assertNotIn("Mi perfil", header)
         self.assertNotIn("Cerrar sesión", header)
 
@@ -35,8 +37,18 @@ class NavegacionHeaderTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Mi perfil", header)
+        self.assertIn("Rutinas", header)
+        self.assertIn(f'href="{reverse("rutinas:lista")}"', header)
         self.assertIn('method="post"', header)
         self.assertIn(f'action="{reverse("usuarios:logout")}"', header)
         self.assertIn("csrfmiddlewaretoken", header)
         self.assertNotIn("Iniciar sesión", header)
         self.assertNotIn("Registrarse", header)
+
+    def test_catalogo_muestra_enlace_rutinas_para_visitante(self):
+        response = self.client.get(reverse("ejercicios:lista"))
+        header = self._header(response)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Rutinas", header)
+        self.assertIn(f'href="{reverse("rutinas:lista")}"', header)

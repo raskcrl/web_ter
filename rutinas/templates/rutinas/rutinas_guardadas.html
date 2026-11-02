@@ -1,0 +1,97 @@
+{% extends "rutinas/base_rutinas.html" %}
+
+{% block title %}Mis rutinas guardadas | Web Ter{% endblock %}
+
+{% block content %}
+    <section class="catalogo-hero" aria-labelledby="guardadas-title">
+        <div>
+            <span class="eyebrow">MI COLECCIÓN</span>
+            <h1 id="guardadas-title">Mis rutinas guardadas</h1>
+            <p>
+                Consulta las rutinas que guardaste en tu cuenta. Puedes volver
+                a revisarlas o quitarlas cuando lo necesites.
+            </p>
+        </div>
+
+        <div class="catalogo-hero-stat" aria-label="Rutinas guardadas">
+            <strong>{{ rutinas_guardadas|length }}</strong>
+            <span>rutinas guardadas</span>
+        </div>
+    </section>
+
+    <section class="catalogo-listado" aria-labelledby="listado-guardadas-title">
+        <div class="catalogo-listado-head">
+            <div>
+                <span class="eyebrow">TU SELECCIÓN</span>
+                <h2 id="listado-guardadas-title">Rutinas en tu cuenta</h2>
+            </div>
+
+            <a href="{% url 'rutinas:lista' %}" class="catalogo-volver">
+                <span aria-hidden="true">←</span> Explorar rutinas
+            </a>
+        </div>
+
+        {% if rutinas_guardadas %}
+            <div class="rutinas-guardadas-lista">
+                {% for guardada in rutinas_guardadas %}
+                    <article class="rutina-guardada">
+                        <div class="rutina-guardada-info">
+                            <span class="eyebrow">
+                                Guardada el {{ guardada.guardado_en|date:"d/m/Y" }}
+                            </span>
+
+                            <h3>
+                                <a href="{% url 'rutinas:detalle' guardada.rutina.slug %}">
+                                    {{ guardada.rutina.nombre }}
+                                </a>
+                            </h3>
+
+                            <p>
+                                {{ guardada.rutina.descripcion|default:guardada.rutina.objetivo|default:"Consulta la secuencia de ejercicios y realiza la rutina a tu ritmo."|truncatewords:24 }}
+                            </p>
+
+                            <span class="rutina-guardada-meta">
+                                {{ guardada.rutina.ejercicios_visibles|length }}
+                                ejercicio{{ guardada.rutina.ejercicios_visibles|length|pluralize }}
+                            </span>
+                        </div>
+
+                        <div class="rutina-guardada-acciones">
+                            <a
+                                href="{% url 'rutinas:detalle' guardada.rutina.slug %}"
+                                class="btn btn-secondary"
+                            >
+                                Ver rutina
+                            </a>
+
+                            <form
+                                method="post"
+                                action="{% url 'rutinas:guardar' guardada.rutina.slug %}"
+                            >
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.path }}">
+                                <input type="hidden" name="accion" value="quitar">
+
+                                <button type="submit" class="btn btn-secondary">
+                                    Quitar
+                                </button>
+                            </form>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="catalogo-vacio">
+                <span class="catalogo-vacio-icon" aria-hidden="true">◎</span>
+                <h3>Todavía no has guardado rutinas</h3>
+                <p>
+                    Explora las rutinas disponibles y guarda las que quieras
+                    consultar más adelante desde tu cuenta.
+                </p>
+                <a href="{% url 'rutinas:lista' %}" class="btn btn-primary">
+                    Explorar rutinas
+                </a>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

@@ -1,0 +1,26 @@
+<article class="rutina-card">
+    <div class="rutina-card-body">
+        <span class="eyebrow">RUTINA</span>
+
+        <h3>
+            <a href="{% url 'rutinas:detalle' rutina.slug %}">
+                {{ rutina.nombre }}
+            </a>
+        </h3>
+
+        <p>
+            {{ rutina.descripcion|default:rutina.objetivo|default:"Consulta la secuencia de ejercicios y realiza la rutina a tu ritmo."|truncatewords:24 }}
+        </p>
+
+        <div class="rutina-card-meta">
+            <span>
+                {{ rutina.total_ejercicios }}
+                ejercicio{{ rutina.total_ejercicios|pluralize }}
+            </span>
+        </div>
+
+        <a href="{% url 'rutinas:detalle' rutina.slug %}" class="btn btn-secondary">
+            Ver rutina
+        </a>
+    </div>
+</article>

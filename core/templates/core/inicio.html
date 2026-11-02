@@ -26,6 +26,7 @@
         <nav class="nav-links" aria-label="Navegación principal">
             <a href="#inicio" aria-current="page">Inicio</a>
             <a href="{% url 'ejercicios:lista' %}">Ejercicios</a>
+            <a href="{% url 'rutinas:lista' %}">Rutinas</a>
             <a href="#servicios">Servicios</a>
             <a href="#nosotros">Nosotros</a>
             {% if user.is_authenticated %}

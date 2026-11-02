@@ -1,0 +1,140 @@
+{% extends "rutinas/base_rutinas.html" %}
+
+{% block title %}{{ rutina.nombre }} | Web Ter{% endblock %}
+
+{% block content %}
+    <nav class="catalogo-migas" aria-label="Ruta de navegación">
+        <a href="{% url 'inicio' %}">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <a href="{% url 'rutinas:lista' %}">Rutinas</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ rutina.nombre }}</span>
+    </nav>
+
+    <article class="rutina-detalle" aria-labelledby="rutina-title">
+        <div class="rutina-detalle-info">
+            <span class="eyebrow">RUTINA</span>
+            <h1 id="rutina-title">{{ rutina.nombre }}</h1>
+
+            {% if rutina.descripcion %}
+                <p class="rutina-descripcion">{{ rutina.descripcion }}</p>
+            {% endif %}
+
+            {% if rutina.objetivo %}
+                <div class="rutina-objetivo">
+                    <span class="eyebrow">OBJETIVO</span>
+                    <p>{{ rutina.objetivo|linebreaksbr }}</p>
+                </div>
+            {% endif %}
+
+            <div class="rutina-acciones">
+                {% if user.is_authenticated %}
+                    <form
+                        method="post"
+                        action="{% url 'rutinas:guardar' rutina.slug %}"
+                        class="rutina-guardar-form"
+                    >
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.path }}">
+
+                        {% if esta_guardada %}
+                            <input type="hidden" name="accion" value="quitar">
+                            <button type="submit" class="btn btn-secondary">
+                                Quitar de mis rutinas
+                            </button>
+                        {% else %}
+                            <input type="hidden" name="accion" value="guardar">
+                            <button type="submit" class="btn btn-primary">
+                                Guardar en mis rutinas
+                            </button>
+                        {% endif %}
+                    </form>
+                {% else %}
+                    <a
+                        href="{% url 'usuarios:login' %}?next={{ request.path|urlencode }}"
+                        class="btn btn-primary"
+                    >
+                        Inicia sesión para guardar
+                    </a>
+                {% endif %}
+
+                <a href="{% url 'rutinas:lista' %}" class="btn btn-secondary">
+                    Volver a rutinas
+                </a>
+            </div>
+        </div>
+    </article>
+
+    <section class="rutina-ejercicios" aria-labelledby="ejercicios-rutina-title">
+        <div class="catalogo-listado-head">
+            <div>
+                <span class="eyebrow">SECUENCIA</span>
+                <h2 id="ejercicios-rutina-title">Ejercicios de la rutina</h2>
+            </div>
+        </div>
+
+        {% if ejercicios_rutina %}
+            <ol class="rutina-ejercicios-lista">
+                {% for rutina_ejercicio in ejercicios_rutina %}
+                    <li class="rutina-ejercicio">
+                        <span class="rutina-ejercicio-orden" aria-hidden="true">
+                            {{ forloop.counter }}
+                        </span>
+
+                        <div class="rutina-ejercicio-body">
+                            <span class="ejercicio-categoria">
+                                {{ rutina_ejercicio.ejercicio.categoria.nombre }}
+                            </span>
+
+                            <h3>
+                                <a href="{% url 'ejercicios:detalle' rutina_ejercicio.ejercicio.slug %}">
+                                    {{ rutina_ejercicio.ejercicio.nombre }}
+                                </a>
+                            </h3>
+
+                            <p>
+                                {{ rutina_ejercicio.ejercicio.descripcion|default:"Consulta las instrucciones y realiza este ejercicio a tu ritmo."|truncatewords:24 }}
+                            </p>
+
+                            {% if rutina_ejercicio.notas %}
+                                <p class="rutina-ejercicio-notas">
+                                    <strong>Notas:</strong>
+                                    {{ rutina_ejercicio.notas|linebreaksbr }}
+                                </p>
+                            {% endif %}
+
+                            <div class="ejercicio-meta">
+                                <span class="dificultad dificultad-{{ rutina_ejercicio.ejercicio.dificultad }}">
+                                    {{ rutina_ejercicio.ejercicio.get_dificultad_display }}
+                                </span>
+                                {% if rutina_ejercicio.ejercicio.duracion_minutos %}
+                                    <span class="ejercicio-duracion">
+                                        {{ rutina_ejercicio.ejercicio.duracion_minutos }} min
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <div class="catalogo-vacio">
+                <span class="catalogo-vacio-icon" aria-hidden="true">◎</span>
+                <h3>Esta rutina no tiene ejercicios disponibles</h3>
+                <p>
+                    Los ejercicios asociados no están disponibles en este momento.
+                    Consulta otras rutinas mientras tanto.
+                </p>
+                <a href="{% url 'rutinas:lista' %}" class="btn btn-primary">
+                    Ver todas las rutinas
+                </a>
+            </div>
+        {% endif %}
+
+        <p class="ejercicio-advertencia">
+            Realiza la rutina a un ritmo cómodo y detente si sientes dolor,
+            mareo o molestias. Esta rutina no sustituye la valoración ni las
+            indicaciones de un profesional de la salud.
+        </p>
+    </section>
+{% endblock %}

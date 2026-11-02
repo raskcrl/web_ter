@@ -76,6 +76,21 @@
         </a>
     </section>
 
+    <section class="profile-section" aria-labelledby="actividad-title">
+        <h3 id="actividad-title" class="profile-section-title">Mi actividad</h3>
+
+        <a
+            href="{% url 'rutinas:guardadas' %}"
+            class="profile-summary profile-activity-card"
+        >
+            <div class="profile-identity">
+                <strong>Mis rutinas</strong>
+                <p>Consulta las rutinas que has guardado en tu cuenta.</p>
+            </div>
+            <span class="profile-activity-arrow" aria-hidden="true">→</span>
+        </a>
+    </section>
+
     <div class="profile-actions">
         <a href="{% url 'inicio' %}" class="btn btn-secondary">
             Regresar al inicio

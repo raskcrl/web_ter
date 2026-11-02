@@ -264,6 +264,22 @@ class PerfilTests(TestCase):
         self.assertContains(response, "laura")
         self.assertContains(response, "laura@example.com")
 
+    def test_muestra_mi_actividad_y_enlace_a_rutinas_guardadas(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(self.url)
+
+        self.assertContains(response, "Mi actividad")
+        self.assertContains(response, "Mis rutinas")
+        self.assertContains(
+            response,
+            "Consulta las rutinas que has guardado en tu cuenta.",
+        )
+        self.assertContains(
+            response,
+            f'href="{reverse("rutinas:guardadas")}"',
+        )
+
     def test_perfil_no_se_almacena_en_cache(self):
         self.client.force_login(self.user)
 
