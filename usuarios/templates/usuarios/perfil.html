@@ -3,19 +3,6 @@
 
 {% block title %}Mi perfil | Web Ter{% endblock %}
 
-{% block eyebrow %}TU CUENTA{% endblock %}
-{% block heading %}Tu perfil, siempre a mano.{% endblock %}
-{% block lead %}
-    Mantén tus datos actualizados para que tu experiencia en Web Ter
-    sea más personal y cercana.
-{% endblock %}
-
-{% block benefits %}
-    <li>Consulta la información básica de tu cuenta.</li>
-    <li>Actualiza tu nombre, apellido y correo electrónico.</li>
-    <li>Tu nombre de usuario permanece como identificador de la cuenta.</li>
-{% endblock %}
-
 {% block card_eyebrow %}DATOS PERSONALES{% endblock %}
 {% block card_title %}Mi perfil{% endblock %}
 {% block card_subtitle %}Revisa tu información y guarda los cambios que necesites.{% endblock %}
@@ -88,4 +75,10 @@
             Cambiar contraseña
         </a>
     </section>
+
+    <div class="profile-actions">
+        <a href="{% url 'inicio' %}" class="btn btn-secondary">
+            Regresar al inicio
+        </a>
+    </div>
 {% endblock %}

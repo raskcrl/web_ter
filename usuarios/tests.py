@@ -185,6 +185,16 @@ class InicioSesionTests(TestCase):
 
         self.assertRedirects(response, reverse("usuarios:perfil"))
 
+    def test_inicio_de_sesion_respeta_la_url_solicitada(self):
+        perfil_url = reverse("usuarios:perfil")
+
+        response = self.client.post(
+            f"{self.url}?next={perfil_url}",
+            {"username": "laura", "password": self.password},
+        )
+
+        self.assertRedirects(response, perfil_url)
+
 
 class CierreSesionTests(TestCase):
     def setUp(self):
@@ -278,6 +288,33 @@ class PerfilTests(TestCase):
         self.assertEqual(self.user.first_name, "Laura Elena")
         self.assertEqual(self.user.last_name, "Gómez Ruiz")
         self.assertEqual(self.user.email, "laura.nueva@example.com")
+
+    def test_edicion_solo_afecta_al_usuario_autenticado(self):
+        otro = User.objects.create_user(
+            username="otro",
+            email="otro@example.com",
+            password="ClaveSegura2026!",
+            first_name="Otro",
+            last_name="Usuario",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            self.url,
+            {
+                "first_name": "Laura Elena",
+                "last_name": "Gómez Ruiz",
+                "email": "laura.nueva@example.com",
+            },
+        )
+
+        self.assertRedirects(response, self.url)
+        self.user.refresh_from_db()
+        otro.refresh_from_db()
+        self.assertEqual(self.user.first_name, "Laura Elena")
+        self.assertEqual(self.user.email, "laura.nueva@example.com")
+        self.assertEqual(otro.first_name, "Otro")
+        self.assertEqual(otro.email, "otro@example.com")
 
     def test_rechaza_correo_de_otro_usuario(self):
         User.objects.create_user(

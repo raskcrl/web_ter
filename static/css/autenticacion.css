@@ -365,6 +365,25 @@
     line-height: 1.5;
 }
 
+.auth-layout:has(.profile-summary) {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.auth-layout:has(.profile-summary) .auth-aside {
+    display: none;
+}
+
+.auth-layout:has(.profile-summary) .auth-card {
+    max-width: 42rem;
+    margin-inline: auto;
+}
+
+.profile-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
 .auth-footer {
     padding: 1.5rem var(--page-padding);
     border-top: 1px solid var(--border);
