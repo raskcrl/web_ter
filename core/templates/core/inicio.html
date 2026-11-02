@@ -25,6 +25,7 @@
 
         <nav class="nav-links" aria-label="Navegación principal">
             <a href="#inicio" aria-current="page">Inicio</a>
+            <a href="{% url 'ejercicios:lista' %}">Ejercicios</a>
             <a href="#servicios">Servicios</a>
             <a href="#nosotros">Nosotros</a>
         </nav>
@@ -106,6 +107,11 @@
                 <p>
                     Herramientas diseñadas para acompañarte
                     durante tu proceso de rehabilitación.
+                </p>
+                <p>
+                    <a href="{% url 'ejercicios:lista' %}" class="btn btn-secondary">
+                        Explorar catálogo
+                    </a>
                 </p>
             </div>
 

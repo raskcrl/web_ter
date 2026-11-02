@@ -1,0 +1,37 @@
+{% load static %}
+<article class="ejercicio-card">
+    <div class="ejercicio-card-media">
+        {% if ejercicio.imagen %}
+            <img
+                src="{{ ejercicio.imagen.url }}"
+                alt="Imagen de {{ ejercicio.nombre }}"
+                loading="lazy"
+            >
+        {% else %}
+            <span class="ejercicio-card-placeholder" aria-hidden="true">◎</span>
+        {% endif %}
+    </div>
+
+    <div class="ejercicio-card-body">
+        <span class="ejercicio-categoria">{{ ejercicio.categoria.nombre }}</span>
+
+        <h3>
+            <a href="{% url 'ejercicios:detalle' ejercicio.slug %}">
+                {{ ejercicio.nombre }}
+            </a>
+        </h3>
+
+        <p>
+            {{ ejercicio.descripcion|default:"Consulta las instrucciones y realiza este ejercicio a tu ritmo."|truncatewords:20 }}
+        </p>
+
+        <div class="ejercicio-meta">
+            <span class="dificultad dificultad-{{ ejercicio.dificultad }}">
+                {{ ejercicio.get_dificultad_display }}
+            </span>
+            {% if ejercicio.duracion_minutos %}
+                <span class="ejercicio-duracion">{{ ejercicio.duracion_minutos }} min</span>
+            {% endif %}
+        </div>
+    </div>
+</article>

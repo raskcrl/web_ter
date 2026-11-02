@@ -1,0 +1,115 @@
+{% extends "ejercicios/base_catalogo.html" %}
+
+{% block title %}{{ ejercicio.nombre }} | Web Ter{% endblock %}
+
+{% block content %}
+    <nav class="catalogo-migas" aria-label="Ruta de navegación">
+        <a href="{% url 'inicio' %}">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <a href="{% url 'ejercicios:lista' %}">Ejercicios</a>
+        <span aria-hidden="true">/</span>
+        <a href="{% url 'ejercicios:por_categoria' ejercicio.categoria.slug %}">
+            {{ ejercicio.categoria.nombre }}
+        </a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ ejercicio.nombre }}</span>
+    </nav>
+
+    <article class="ejercicio-detalle">
+        <div class="ejercicio-detalle-media">
+            {% if ejercicio.imagen %}
+                <img
+                    src="{{ ejercicio.imagen.url }}"
+                    alt="Imagen de {{ ejercicio.nombre }}"
+                >
+            {% else %}
+                <span class="ejercicio-detalle-placeholder" aria-hidden="true">◎</span>
+            {% endif %}
+        </div>
+
+        <div class="ejercicio-detalle-info">
+            <a
+                href="{% url 'ejercicios:por_categoria' ejercicio.categoria.slug %}"
+                class="ejercicio-categoria"
+            >
+                {{ ejercicio.categoria.nombre }}
+            </a>
+
+            <h1>{{ ejercicio.nombre }}</h1>
+
+            {% if ejercicio.descripcion %}
+                <p class="ejercicio-detalle-descripcion">{{ ejercicio.descripcion }}</p>
+            {% endif %}
+
+            <dl class="ejercicio-datos">
+                <div>
+                    <dt>Dificultad</dt>
+                    <dd>
+                        <span class="dificultad dificultad-{{ ejercicio.dificultad }}">
+                            {{ ejercicio.get_dificultad_display }}
+                        </span>
+                    </dd>
+                </div>
+
+                {% if ejercicio.duracion_minutos %}
+                    <div>
+                        <dt>Duración</dt>
+                        <dd>{{ ejercicio.duracion_minutos }} minutos</dd>
+                    </div>
+                {% endif %}
+            </dl>
+
+            <div class="ejercicio-acciones">
+                <a href="{% url 'ejercicios:lista' %}" class="btn btn-secondary">
+                    Volver al catálogo
+                </a>
+
+                {% if ejercicio.video_url %}
+                    <a
+                        href="{{ ejercicio.video_url }}"
+                        class="btn btn-primary"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Ver video
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </article>
+
+    <section class="ejercicio-instrucciones-bloque" aria-labelledby="instrucciones-title">
+        <div class="catalogo-listado-head">
+            <div>
+                <span class="eyebrow">INSTRUCCIONES</span>
+                <h2 id="instrucciones-title">Cómo realizarlo</h2>
+            </div>
+        </div>
+
+        <div class="ejercicio-instrucciones">
+            {{ ejercicio.instrucciones|linebreaks }}
+        </div>
+
+        <p class="ejercicio-advertencia">
+            Realiza el ejercicio a un ritmo cómodo y detente si sientes dolor,
+            mareo o molestias. Ante cualquier duda, consulta con un profesional de la salud.
+        </p>
+    </section>
+
+    {% if relacionados %}
+        <section class="ejercicio-relacionados" aria-labelledby="relacionados-title">
+            <div class="catalogo-listado-head">
+                <div>
+                    <span class="eyebrow">SIGUE EXPLORANDO</span>
+                    <h2 id="relacionados-title">Más de {{ ejercicio.categoria.nombre }}</h2>
+                </div>
+            </div>
+
+            <div class="catalogo-grid">
+                {% for relacionado in relacionados %}
+                    {% include "ejercicios/_ejercicio_card.html" with ejercicio=relacionado %}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}

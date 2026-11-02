@@ -1,0 +1,117 @@
+{% extends "ejercicios/base_catalogo.html" %}
+
+{% block title %}Catálogo de ejercicios | Web Ter{% endblock %}
+
+{% block content %}
+    <section class="catalogo-hero" aria-labelledby="catalogo-title">
+        <div>
+            <span class="eyebrow">CATÁLOGO DE EJERCICIOS</span>
+            <h1 id="catalogo-title">Muévete a tu propio ritmo.</h1>
+            <p>
+                Explora ejercicios organizados por categoría y consulta
+                las indicaciones para realizarlos de forma segura en casa.
+            </p>
+        </div>
+
+        <div class="catalogo-hero-stat" aria-label="Ejercicios disponibles">
+            <strong>{{ total_ejercicios }}</strong>
+            <span>ejercicios disponibles</span>
+        </div>
+    </section>
+
+    <nav class="catalogo-categorias" aria-label="Filtrar por categoría">
+        <a
+            href="{% url 'ejercicios:lista' %}"
+            class="categoria-chip{% if not categoria_actual %} is-active{% endif %}"
+            {% if not categoria_actual %}aria-current="page"{% endif %}
+        >
+            Todos
+            <span>{{ total_ejercicios }}</span>
+        </a>
+
+        {% for categoria in categorias %}
+            <a
+                href="{% url 'ejercicios:por_categoria' categoria.slug %}"
+                class="categoria-chip{% if categoria_actual and categoria_actual.pk == categoria.pk %} is-active{% endif %}"
+                {% if categoria_actual and categoria_actual.pk == categoria.pk %}aria-current="page"{% endif %}
+            >
+                {{ categoria.nombre }}
+                <span>{{ categoria.total_ejercicios }}</span>
+            </a>
+        {% endfor %}
+    </nav>
+
+    <section class="catalogo-listado" aria-labelledby="listado-title">
+        <div class="catalogo-listado-head">
+            <div>
+                <span class="eyebrow">
+                    {% if categoria_actual %}
+                        {{ categoria_actual.nombre|upper }}
+                    {% else %}
+                        TODOS LOS EJERCICIOS
+                    {% endif %}
+                </span>
+                <h2 id="listado-title">
+                    {% if categoria_actual %}
+                        {{ categoria_actual.nombre }}
+                    {% else %}
+                        Ejercicios para acompañar tu proceso
+                    {% endif %}
+                </h2>
+                {% if categoria_actual.descripcion %}
+                    <p>{{ categoria_actual.descripcion }}</p>
+                {% endif %}
+            </div>
+
+            {% if categoria_actual %}
+                <a href="{% url 'ejercicios:lista' %}" class="catalogo-volver">
+                    <span aria-hidden="true">←</span> Ver todos
+                </a>
+            {% endif %}
+        </div>
+
+        {% if ejercicios %}
+            <div class="catalogo-grid">
+                {% for ejercicio in ejercicios %}
+                    {% include "ejercicios/_ejercicio_card.html" with ejercicio=ejercicio %}
+                {% endfor %}
+            </div>
+
+            {% if is_paginated %}
+                <nav class="catalogo-paginacion" aria-label="Paginación del catálogo">
+                    {% if page_obj.has_previous %}
+                        <a class="btn btn-secondary" href="?page={{ page_obj.previous_page_number }}">
+                            Anterior
+                        </a>
+                    {% else %}
+                        <span class="btn btn-secondary is-disabled" aria-disabled="true">Anterior</span>
+                    {% endif %}
+
+                    <span class="catalogo-pagina">
+                        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a class="btn btn-secondary" href="?page={{ page_obj.next_page_number }}">
+                            Siguiente
+                        </a>
+                    {% else %}
+                        <span class="btn btn-secondary is-disabled" aria-disabled="true">Siguiente</span>
+                    {% endif %}
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="catalogo-vacio">
+                <span class="catalogo-vacio-icon" aria-hidden="true">◎</span>
+                <h3>Todavía no hay ejercicios disponibles</h3>
+                <p>
+                    Estamos preparando contenido para esta categoría.
+                    Vuelve pronto o consulta las demás categorías.
+                </p>
+                <a href="{% url 'ejercicios:lista' %}" class="btn btn-primary">
+                    Ver todos los ejercicios
+                </a>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}
