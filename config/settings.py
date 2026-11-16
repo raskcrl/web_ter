@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'usuarios.apps.UsuariosConfig',
     'ejercicios.apps.EjerciciosConfig',
     'rutinas.apps.RutinasConfig',
+    'panel.apps.PanelConfig',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,130 @@
+{% extends "panel/base_panel.html" %}
+
+{% block title %}Dashboard | Panel administrativo Web Ter{% endblock %}
+
+{% block content %}
+    <header class="panel-page-head panel-page-head-actions">
+        <div>
+            <span class="eyebrow">ADMINISTRACIÓN</span>
+            <h1>Dashboard</h1>
+            <p>Bienvenido, {{ user.get_full_name|default:user.get_username }}.</p>
+        </div>
+
+        <div class="panel-head-actions">
+            <a href="{% url 'panel:ejercicio_crear' %}" class="btn btn-primary">
+                Nuevo ejercicio
+            </a>
+            <a href="{% url 'panel:rutina_crear' %}" class="btn btn-secondary">
+                Nueva rutina
+            </a>
+        </div>
+    </header>
+
+    <section class="panel-stats" aria-label="Resumen del contenido">
+        <a href="{% url 'panel:categorias' %}" class="panel-stat-card">
+            <span class="panel-stat-label">Categorías</span>
+            <strong>{{ total_categorias }}</strong>
+            <span>{{ categorias_activas }} activa(s)</span>
+        </a>
+
+        <a href="{% url 'panel:ejercicios' %}" class="panel-stat-card">
+            <span class="panel-stat-label">Ejercicios</span>
+            <strong>{{ total_ejercicios }}</strong>
+            <span>{{ ejercicios_activos }} activo(s)</span>
+        </a>
+
+        <a href="{% url 'panel:rutinas' %}" class="panel-stat-card">
+            <span class="panel-stat-label">Rutinas</span>
+            <strong>{{ total_rutinas }}</strong>
+            <span>{{ rutinas_activas }} activa(s)</span>
+        </a>
+
+        <a href="{% url 'panel:usuarios' %}" class="panel-stat-card">
+            <span class="panel-stat-label">Usuarios</span>
+            <strong>{{ total_usuarios }}</strong>
+            <span>{{ usuarios_activos }} activo(s)</span>
+        </a>
+    </section>
+
+    <div class="panel-dashboard-grid">
+        <section class="panel-card" aria-labelledby="ultimos-ejercicios-title">
+            <div class="panel-section-head panel-section-head-row">
+                <div>
+                    <h2 id="ultimos-ejercicios-title">Últimos ejercicios</h2>
+                    <p>Registros añadidos recientemente al catálogo.</p>
+                </div>
+                <a href="{% url 'panel:ejercicios' %}" class="panel-text-link">
+                    Ver todos
+                </a>
+            </div>
+
+            {% if ultimos_ejercicios %}
+                <ul class="panel-compact-list">
+                    {% for ejercicio in ultimos_ejercicios %}
+                        <li>
+                            <div>
+                                <strong>{{ ejercicio.nombre }}</strong>
+                                <span>{{ ejercicio.categoria.nombre }}</span>
+                            </div>
+                            <span class="panel-badge{% if not ejercicio.activo %} panel-badge-muted{% endif %}">
+                                {% if ejercicio.activo %}Activo{% else %}Inactivo{% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="panel-empty-text">Todavía no hay ejercicios registrados.</p>
+            {% endif %}
+        </section>
+
+        <section class="panel-card" aria-labelledby="ultimas-rutinas-title">
+            <div class="panel-section-head panel-section-head-row">
+                <div>
+                    <h2 id="ultimas-rutinas-title">Últimas rutinas</h2>
+                    <p>Secuencias creadas recientemente.</p>
+                </div>
+                <a href="{% url 'panel:rutinas' %}" class="panel-text-link">
+                    Ver todas
+                </a>
+            </div>
+
+            {% if ultimas_rutinas %}
+                <ul class="panel-compact-list">
+                    {% for rutina in ultimas_rutinas %}
+                        <li>
+                            <div>
+                                <strong>{{ rutina.nombre }}</strong>
+                                <span>Orden {{ rutina.orden }}</span>
+                            </div>
+                            <span class="panel-badge{% if not rutina.activa %} panel-badge-muted{% endif %}">
+                                {% if rutina.activa %}Activa{% else %}Inactiva{% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="panel-empty-text">Todavía no hay rutinas registradas.</p>
+            {% endif %}
+        </section>
+    </div>
+
+    <section class="panel-account-card panel-account-card-compact" aria-labelledby="cuenta-title">
+        <div class="panel-section-head">
+            <h2 id="cuenta-title">Cuenta administrativa</h2>
+            <p>
+                {{ user.get_username }} · {{ user.email|default:"Sin correo registrado" }}
+            </p>
+        </div>
+
+        <dl class="panel-details">
+            <div>
+                <dt>Tipo de acceso</dt>
+                <dd>Administrador</dd>
+            </div>
+            <div>
+                <dt>Administradores activos</dt>
+                <dd>{{ total_staff }}</dd>
+            </div>
+        </dl>
+    </section>
+{% endblock %}

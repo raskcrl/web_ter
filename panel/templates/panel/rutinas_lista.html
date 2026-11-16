@@ -1,0 +1,100 @@
+{% extends "panel/base_panel.html" %}
+
+{% block title %}Rutinas | Panel administrativo Web Ter{% endblock %}
+
+{% block content %}
+    <header class="panel-page-head panel-page-head-actions">
+        <div>
+            <span class="eyebrow">SECUENCIAS</span>
+            <h1>Rutinas</h1>
+            <p>Gestiona las rutinas y la secuencia de sus ejercicios.</p>
+        </div>
+
+        <div class="panel-head-actions">
+            <a href="{% url 'panel:rutina_crear' %}" class="btn btn-primary">
+                Nueva rutina
+            </a>
+        </div>
+    </header>
+
+    <section class="panel-card">
+        <form method="get" class="panel-toolbar" role="search">
+            <div class="panel-search">
+                <label for="buscar-rutina" class="sr-only">Buscar rutinas</label>
+                <input
+                    id="buscar-rutina"
+                    type="search"
+                    name="q"
+                    value="{{ consulta }}"
+                    class="form-input"
+                    placeholder="Buscar por nombre, descripción u objetivo"
+                >
+            </div>
+            <button type="submit" class="btn btn-secondary">Buscar</button>
+            {% if consulta %}
+                <a href="{% url 'panel:rutinas' %}" class="panel-text-link">
+                    Limpiar
+                </a>
+            {% endif %}
+        </form>
+
+        {% if rutinas %}
+            <div class="panel-table-wrap">
+                <table class="panel-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Rutina</th>
+                            <th scope="col">Ejercicios</th>
+                            <th scope="col">Orden</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col"><span class="sr-only">Acciones</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rutina in rutinas %}
+                            <tr>
+                                <td>
+                                    <strong>{{ rutina.nombre }}</strong>
+                                    {% if rutina.objetivo %}
+                                        <span class="panel-table-subtext">{{ rutina.objetivo|truncatewords:12 }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ rutina.total_ejercicios }}</td>
+                                <td>{{ rutina.orden }}</td>
+                                <td>
+                                    <span class="panel-badge{% if not rutina.activa %} panel-badge-muted{% endif %}">
+                                        {% if rutina.activa %}Activa{% else %}Inactiva{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="panel-row-actions">
+                                        <a href="{% url 'panel:rutina_ejercicios' rutina.pk %}" class="panel-action-link">
+                                            Ejercicios
+                                        </a>
+                                        <a href="{% url 'panel:rutina_editar' rutina.pk %}" class="panel-action-link">
+                                            Editar
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="panel-empty">
+                <h2>No hay rutinas para mostrar</h2>
+                <p>
+                    {% if consulta %}
+                        Prueba con otra búsqueda o limpia el filtro.
+                    {% else %}
+                        Crea la primera rutina y después añade sus ejercicios.
+                    {% endif %}
+                </p>
+                <a href="{% url 'panel:rutina_crear' %}" class="btn btn-primary">
+                    Nueva rutina
+                </a>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "panel/base_panel.html" %}
+
+{% block title %}Categorías | Panel administrativo Web Ter{% endblock %}
+
+{% block content %}
+    <header class="panel-page-head panel-page-head-actions">
+        <div>
+            <span class="eyebrow">CATÁLOGO</span>
+            <h1>Categorías</h1>
+            <p>Organiza los ejercicios del catálogo por categoría.</p>
+        </div>
+
+        <div class="panel-head-actions">
+            <a href="{% url 'panel:categoria_crear' %}" class="btn btn-primary">
+                Nueva categoría
+            </a>
+        </div>
+    </header>
+
+    <section class="panel-card">
+        <form method="get" class="panel-toolbar" role="search">
+            <div class="panel-search">
+                <label for="buscar-categoria" class="sr-only">Buscar categorías</label>
+                <input
+                    id="buscar-categoria"
+                    type="search"
+                    name="q"
+                    value="{{ consulta }}"
+                    class="form-input"
+                    placeholder="Buscar por nombre o descripción"
+                >
+            </div>
+            <button type="submit" class="btn btn-secondary">Buscar</button>
+            {% if consulta %}
+                <a href="{% url 'panel:categorias' %}" class="panel-text-link">
+                    Limpiar
+                </a>
+            {% endif %}
+        </form>
+
+        {% if categorias %}
+            <div class="panel-table-wrap">
+                <table class="panel-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Categoría</th>
+                            <th scope="col">Slug</th>
+                            <th scope="col">Ejercicios</th>
+                            <th scope="col">Orden</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col"><span class="sr-only">Acciones</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for categoria in categorias %}
+                            <tr>
+                                <td>
+                                    <strong>{{ categoria.nombre }}</strong>
+                                    {% if categoria.descripcion %}
+                                        <span class="panel-table-subtext">{{ categoria.descripcion|truncatewords:12 }}</span>
+                                    {% endif %}
+                                </td>
+                                <td><code>{{ categoria.slug }}</code></td>
+                                <td>{{ categoria.total_ejercicios }}</td>
+                                <td>{{ categoria.orden }}</td>
+                                <td>
+                                    <span class="panel-badge{% if not categoria.activa %} panel-badge-muted{% endif %}">
+                                        {% if categoria.activa %}Activa{% else %}Inactiva{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="panel-row-actions">
+                                        <a href="{% url 'panel:categoria_editar' categoria.pk %}" class="panel-action-link">
+                                            Editar
+                                        </a>
+                                        <a href="{% url 'panel:categoria_eliminar' categoria.pk %}" class="panel-action-link panel-action-danger">
+                                            Eliminar
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="panel-empty">
+                <h2>No hay categorías para mostrar</h2>
+                <p>
+                    {% if consulta %}
+                        Prueba con otra búsqueda o limpia el filtro.
+                    {% else %}
+                        Crea la primera categoría para empezar a organizar el catálogo.
+                    {% endif %}
+                </p>
+                <a href="{% url 'panel:categoria_crear' %}" class="btn btn-primary">
+                    Nueva categoría
+                </a>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "panel/base_panel.html" %}
+
+{% block title %}{{ titulo }} | Panel administrativo Web Ter{% endblock %}
+
+{% block content %}
+    <header class="panel-page-head">
+        <span class="eyebrow">CONFIRMACIÓN</span>
+        <h1>{{ titulo }}</h1>
+        <p>Revisa la información antes de continuar.</p>
+    </header>
+
+    <section class="panel-card panel-confirm-card">
+        <p class="panel-confirm-message">{{ mensaje }}</p>
+
+        <dl class="panel-details">
+            <div>
+                <dt>Registro</dt>
+                <dd>{{ objeto }}</dd>
+            </div>
+            {% for dependencia in dependencias %}
+                <div>
+                    <dt>Dependencia</dt>
+                    <dd>{{ dependencia }}</dd>
+                </div>
+            {% endfor %}
+        </dl>
+
+        {% if not puede_confirmar %}
+            <div class="form-alert" role="alert">
+                <p>
+                    No es posible completar esta acción mientras existan
+                    registros asociados. Elimina o reasigna primero esas
+                    dependencias.
+                </p>
+            </div>
+        {% endif %}
+
+        <div class="panel-form-actions">
+            {% if puede_confirmar %}
+                <form method="post" class="panel-confirm-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        {{ texto_confirmar }}
+                    </button>
+                </form>
+            {% endif %}
+
+            {% if url_cancelar_kwargs %}
+                <a href="{% url url_cancelar url_cancelar_kwargs %}" class="btn btn-secondary">
+                    Volver
+                </a>
+            {% else %}
+                <a href="{% url url_cancelar %}" class="btn btn-secondary">
+                    Volver
+                </a>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

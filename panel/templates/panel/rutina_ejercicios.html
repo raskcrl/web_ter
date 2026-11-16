@@ -1,0 +1,101 @@
+{% extends "panel/base_panel.html" %}
+
+{% block title %}Ejercicios de {{ rutina.nombre }} | Panel administrativo Web Ter{% endblock %}
+
+{% block content %}
+    <header class="panel-page-head panel-page-head-actions">
+        <div>
+            <span class="eyebrow">RUTINA</span>
+            <h1>{{ rutina.nombre }}</h1>
+            <p>Define la secuencia de ejercicios y sus notas.</p>
+        </div>
+
+        <div class="panel-head-actions">
+            <a href="{% url 'panel:rutina_ejercicio_agregar' rutina.pk %}" class="btn btn-primary">
+                Añadir ejercicio
+            </a>
+            <a href="{% url 'panel:rutina_editar' rutina.pk %}" class="btn btn-secondary">
+                Editar rutina
+            </a>
+        </div>
+    </header>
+
+    <nav class="panel-breadcrumb" aria-label="Ruta de navegación">
+        <a href="{% url 'panel:rutinas' %}">Rutinas</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ rutina.nombre }}</span>
+    </nav>
+
+    <section class="panel-card">
+        <div class="panel-section-head panel-section-head-row">
+            <div>
+                <h2>Ejercicios de la rutina</h2>
+                <p>
+                    {{ asociaciones|length }} ejercicio(s) · Estado:
+                    {% if rutina.activa %}activa{% else %}inactiva{% endif %}
+                </p>
+            </div>
+            <a href="{% url 'panel:rutinas' %}" class="panel-text-link">
+                Volver a rutinas
+            </a>
+        </div>
+
+        {% if asociaciones %}
+            <div class="panel-table-wrap">
+                <table class="panel-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Orden</th>
+                            <th scope="col">Ejercicio</th>
+                            <th scope="col">Categoría</th>
+                            <th scope="col">Notas</th>
+                            <th scope="col"><span class="sr-only">Acciones</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for asociacion in asociaciones %}
+                            <tr>
+                                <td><span class="panel-order">{{ asociacion.orden }}</span></td>
+                                <td>
+                                    <strong>{{ asociacion.ejercicio.nombre }}</strong>
+                                    <span class="panel-table-subtext">
+                                        {{ asociacion.ejercicio.get_dificultad_display }}
+                                        {% if asociacion.ejercicio.duracion_minutos %}
+                                            · {{ asociacion.ejercicio.duracion_minutos }} min
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td>{{ asociacion.ejercicio.categoria.nombre }}</td>
+                                <td>
+                                    {% if asociacion.notas %}
+                                        {{ asociacion.notas|truncatewords:16 }}
+                                    {% else %}
+                                        <span class="panel-muted-text">Sin notas</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="panel-row-actions">
+                                        <a href="{% url 'panel:rutina_ejercicio_editar' rutina.pk asociacion.pk %}" class="panel-action-link">
+                                            Editar
+                                        </a>
+                                        <a href="{% url 'panel:rutina_ejercicio_eliminar' rutina.pk asociacion.pk %}" class="panel-action-link panel-action-danger">
+                                            Quitar
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="panel-empty">
+                <h2>Esta rutina todavía no tiene ejercicios</h2>
+                <p>Añade el primer ejercicio para construir la secuencia.</p>
+                <a href="{% url 'panel:rutina_ejercicio_agregar' rutina.pk %}" class="btn btn-primary">
+                    Añadir ejercicio
+                </a>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

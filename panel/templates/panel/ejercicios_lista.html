@@ -1,0 +1,135 @@
+{% extends "panel/base_panel.html" %}
+
+{% block title %}Ejercicios | Panel administrativo Web Ter{% endblock %}
+
+{% block content %}
+    <header class="panel-page-head panel-page-head-actions">
+        <div>
+            <span class="eyebrow">CATÁLOGO</span>
+            <h1>Ejercicios</h1>
+            <p>Administra el contenido y la visibilidad de los ejercicios.</p>
+        </div>
+
+        <div class="panel-head-actions">
+            <a href="{% url 'panel:ejercicio_crear' %}" class="btn btn-primary">
+                Nuevo ejercicio
+            </a>
+        </div>
+    </header>
+
+    <section class="panel-card">
+        <form method="get" class="panel-toolbar" role="search">
+            <div class="panel-search">
+                <label for="buscar-ejercicio" class="sr-only">Buscar ejercicios</label>
+                <input
+                    id="buscar-ejercicio"
+                    type="search"
+                    name="q"
+                    value="{{ consulta }}"
+                    class="form-input"
+                    placeholder="Buscar por nombre, categoría o instrucciones"
+                >
+            </div>
+
+            <div class="panel-filter">
+                <label for="filtrar-categoria" class="sr-only">Filtrar por categoría</label>
+                <select id="filtrar-categoria" name="categoria" class="form-input">
+                    <option value="">Todas las categorías</option>
+                    {% for categoria in categorias %}
+                        <option
+                            value="{{ categoria.pk }}"
+                            {% if categoria_id == categoria.pk|stringformat:"s" %}selected{% endif %}
+                        >
+                            {{ categoria.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-secondary">Filtrar</button>
+            {% if consulta or categoria_id %}
+                <a href="{% url 'panel:ejercicios' %}" class="panel-text-link">
+                    Limpiar
+                </a>
+            {% endif %}
+        </form>
+
+        {% if ejercicios %}
+            <div class="panel-table-wrap">
+                <table class="panel-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Ejercicio</th>
+                            <th scope="col">Categoría</th>
+                            <th scope="col">Dificultad</th>
+                            <th scope="col">Duración</th>
+                            <th scope="col">Rutinas</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col"><span class="sr-only">Acciones</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ejercicio in ejercicios %}
+                            <tr>
+                                <td>
+                                    <div class="panel-item-cell">
+                                        <span class="panel-thumb">
+                                            {% if ejercicio.imagen %}
+                                                <img src="{{ ejercicio.imagen.url }}" alt="">
+                                            {% else %}
+                                                <span aria-hidden="true">◎</span>
+                                            {% endif %}
+                                        </span>
+                                        <span>
+                                            <strong>{{ ejercicio.nombre }}</strong>
+                                            <span class="panel-table-subtext">Orden en catálogo: {{ ejercicio.categoria.orden }}</span>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td>{{ ejercicio.categoria.nombre }}</td>
+                                <td>{{ ejercicio.get_dificultad_display }}</td>
+                                <td>
+                                    {% if ejercicio.duracion_minutos %}
+                                        {{ ejercicio.duracion_minutos }} min
+                                    {% else %}
+                                        Sin definir
+                                    {% endif %}
+                                </td>
+                                <td>{{ ejercicio.total_rutinas }}</td>
+                                <td>
+                                    <span class="panel-badge{% if not ejercicio.activo %} panel-badge-muted{% endif %}">
+                                        {% if ejercicio.activo %}Activo{% else %}Inactivo{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="panel-row-actions">
+                                        <a href="{% url 'panel:ejercicio_editar' ejercicio.pk %}" class="panel-action-link">
+                                            Editar
+                                        </a>
+                                        <a href="{% url 'panel:ejercicio_eliminar' ejercicio.pk %}" class="panel-action-link panel-action-danger">
+                                            Eliminar
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="panel-empty">
+                <h2>No hay ejercicios para mostrar</h2>
+                <p>
+                    {% if consulta or categoria_id %}
+                        Prueba con otros filtros o limpia la búsqueda.
+                    {% else %}
+                        Crea el primer ejercicio del catálogo.
+                    {% endif %}
+                </p>
+                <a href="{% url 'panel:ejercicio_crear' %}" class="btn btn-primary">
+                    Nuevo ejercicio
+                </a>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

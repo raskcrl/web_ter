@@ -1,0 +1,114 @@
+{% extends "panel/base_panel.html" %}
+
+{% block title %}Usuarios | Panel administrativo Web Ter{% endblock %}
+
+{% block content %}
+    <header class="panel-page-head">
+        <span class="eyebrow">CUENTAS</span>
+        <h1>Usuarios</h1>
+        <p>Consulta las cuentas registradas y controla su estado de acceso.</p>
+    </header>
+
+    <section class="panel-card">
+        <form method="get" class="panel-toolbar" role="search">
+            <div class="panel-search">
+                <label for="buscar-usuario" class="sr-only">Buscar usuarios</label>
+                <input
+                    id="buscar-usuario"
+                    type="search"
+                    name="q"
+                    value="{{ consulta }}"
+                    class="form-input"
+                    placeholder="Buscar por usuario, nombre o correo"
+                >
+            </div>
+
+            <div class="panel-filter">
+                <label for="filtrar-estado" class="sr-only">Filtrar por estado</label>
+                <select id="filtrar-estado" name="estado" class="form-input">
+                    <option value="">Todos los estados</option>
+                    <option value="activos" {% if estado == "activos" %}selected{% endif %}>Activos</option>
+                    <option value="inactivos" {% if estado == "inactivos" %}selected{% endif %}>Inactivos</option>
+                    <option value="staff" {% if estado == "staff" %}selected{% endif %}>Administradores</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-secondary">Filtrar</button>
+            {% if consulta or estado %}
+                <a href="{% url 'panel:usuarios' %}" class="panel-text-link">
+                    Limpiar
+                </a>
+            {% endif %}
+        </form>
+
+        {% if usuarios %}
+            <div class="panel-table-wrap">
+                <table class="panel-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Usuario</th>
+                            <th scope="col">Correo</th>
+                            <th scope="col">Rol</th>
+                            <th scope="col">Rutinas guardadas</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col"><span class="sr-only">Acciones</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in usuarios %}
+                            <tr>
+                                <td>
+                                    <strong>{{ usuario.get_full_name|default:usuario.get_username }}</strong>
+                                    <span class="panel-table-subtext">@{{ usuario.get_username }}</span>
+                                </td>
+                                <td>{{ usuario.email|default:"Sin correo" }}</td>
+                                <td>
+                                    {% if usuario.is_superuser %}
+                                        Superusuario
+                                    {% elif usuario.is_staff %}
+                                        Administrador
+                                    {% else %}
+                                        Usuario
+                                    {% endif %}
+                                </td>
+                                <td>{{ usuario.total_rutinas_guardadas }}</td>
+                                <td>
+                                    <span class="panel-badge{% if not usuario.is_active %} panel-badge-muted{% endif %}">
+                                        {% if usuario.is_active %}Activo{% else %}Inactivo{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if usuario.pk == user.pk and usuario.is_active %}
+                                        <span class="panel-muted-text">Tu cuenta</span>
+                                    {% else %}
+                                        <form
+                                            method="post"
+                                            action="{% url 'panel:usuario_estado' usuario.pk %}"
+                                            class="panel-inline-form"
+                                        >
+                                            {% csrf_token %}
+                                            <button
+                                                type="submit"
+                                                class="panel-action-link{% if usuario.is_active %} panel-action-danger{% endif %}"
+                                            >
+                                                {% if usuario.is_active %}Desactivar{% else %}Activar{% endif %}
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="panel-empty">
+                <h2>No hay usuarios para mostrar</h2>
+                <p>Prueba con otra búsqueda o cambia el filtro de estado.</p>
+                <a href="{% url 'panel:usuarios' %}" class="btn btn-secondary">
+                    Ver todos
+                </a>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}
