@@ -374,7 +374,20 @@ class PerfilTests(TestCase):
 class PerfilFotoTests(TestCase):
     def setUp(self):
         self.media_root = tempfile.mkdtemp()
-        self.override_media = override_settings(MEDIA_ROOT=self.media_root)
+        self.override_media = override_settings(
+            MEDIA_ROOT=self.media_root,
+            STORAGES={
+                "default": {
+                    "BACKEND": "django.core.files.storage.FileSystemStorage",
+                },
+                "staticfiles": {
+                    "BACKEND": (
+                        "django.contrib.staticfiles.storage."
+                        "StaticFilesStorage"
+                    ),
+                },
+            },
+        )
         self.override_media.enable()
         self.addCleanup(self.override_media.disable)
         self.addCleanup(shutil.rmtree, self.media_root, ignore_errors=True)

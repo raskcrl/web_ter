@@ -13,7 +13,7 @@ El proyecto utiliza las siguientes tecnologías:
 | Tecnología | Versión | Uso |
 |---|---|---|
 | Python | 3.12.10 | Lenguaje principal del proyecto. |
-| Django | 6.1.2 (última versión reportada en el entorno; verificar `requirements.txt`) | Framework para el desarrollo del backend y las vistas web. |
+| Django | 5.2.19 en producción; 5.0.14 en local | Framework para el desarrollo del backend y las vistas web. |
 | MariaDB | 10.4.32 | Sistema gestor de base de datos utilizado mediante XAMPP. |
 | MySQL / SQL | Compatible con el entorno MariaDB | Administración y consulta de datos. |
 | HTML5 | — | Estructura de las páginas web. |
@@ -24,13 +24,16 @@ El proyecto utiliza las siguientes tecnologías:
 | Visual Studio Code | 1.143.1 | Editor de código. |
 | XAMPP | — | Entorno local para administrar el servidor de base de datos. |
 
-**Nota sobre Django:** se ha reportado Django 6.1.2 en el entorno, pero algunos archivos del proyecto contienen referencias a Django 5.0.14. Para conocer la versión definitiva, ejecutar:
+**Nota sobre Django:** producción utiliza Django 5.2.19 y el entorno local mantiene Django 5.0.14. Django 5.2 requiere MariaDB 10.5 o superior, pero el entorno local utiliza MariaDB 10.4.32; por eso las dependencias están separadas:
+
+- `requirements.txt`: dependencias de producción, con Django 5.2.19.
+- `requirements-local.txt`: dependencias locales, con Django 5.0.14.
+
+Para conocer la versión instalada en el entorno virtual local, ejecutar:
 
 ```powershell
 .\venv\Scripts\python.exe -m django --version
 ```
-
-También se recomienda consultar `requirements.txt`, ya que es el archivo que contiene las dependencias declaradas del proyecto.
 
 ---
 
@@ -131,17 +134,19 @@ python -m pip install --upgrade pip
 
 ### 4.5. Instalar dependencias
 
-Instalar las dependencias declaradas en el archivo `requirements.txt`:
+Instalar las dependencias locales declaradas en `requirements-local.txt`:
 
 ```powershell
-pip install -r requirements.txt
+pip install -r requirements-local.txt
 ```
 
 Si se utiliza el ejecutable directamente:
 
 ```powershell
-.\venv\Scripts\python.exe -m pip install -r requirements.txt
+.\venv\Scripts\python.exe -m pip install -r requirements-local.txt
 ```
+
+No instalar `requirements.txt` en el entorno local con MariaDB 10.4, porque ese archivo contiene Django 5.2.19 y requiere MariaDB 10.5 o superior.
 
 ---
 
@@ -269,6 +274,29 @@ CTRL + C
 
 **Importante:** cada vez que se quiera trabajar en el proyecto, se debe iniciar XAMPP y ejecutar el servidor de Django desde la carpeta raíz del proyecto.
 
+### 8.1. Variables de entorno para producción
+
+La configuración de producción se obtiene de variables de entorno. No guardar valores reales en el repositorio.
+
+| Variable | Uso |
+|---|---|
+| `SECRET_KEY` | Clave secreta de Django. Obligatoria en producción. |
+| `DEBUG` | Debe ser `False` en producción. |
+| `DATABASE_URL` | Cadena de conexión de Neon PostgreSQL. |
+| `ALLOWED_HOSTS` | Dominios permitidos, separados por comas. |
+| `CSRF_TRUSTED_ORIGINS` | Orígenes de confianza, separados por comas. |
+| `CLOUDINARY_URL` | Credenciales de Cloudinary en formato `cloudinary://...`. |
+
+También se pueden usar `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` y `CLOUDINARY_API_SECRET` en lugar de `CLOUDINARY_URL`.
+
+Las dependencias de producción se instalan desde `requirements.txt`. Los archivos estáticos se recolectan con:
+
+```powershell
+python manage.py collectstatic
+```
+
+La configuración de Render se realizará en una fase posterior.
+
 ---
 
 ## 9. Estructura del proyecto
@@ -318,6 +346,7 @@ web_ter/
 │
 ├── manage.py
 ├── requirements.txt
+├── requirements-local.txt
 └── .gitignore
 ```
 
@@ -448,7 +477,7 @@ Entre las validaciones realizadas se encuentran:
 - Verificación de migraciones.
 - Pruebas de integración entre aplicaciones.
 
-En la implementación de rutinas se reportaron 71 pruebas aprobadas. En una auditoría anterior de las funcionalidades principales se reportaron 53 pruebas aprobadas.
+La suite actual contiene 110 pruebas aprobadas.
 
 Para ejecutar todas las pruebas disponibles:
 
@@ -485,7 +514,7 @@ El proyecto se está desarrollando por fases para mantener una implementación o
 - Mantener separadas las funcionalidades públicas y privadas.
 - Los datos personales deben permanecer asociados al usuario correspondiente.
 - No subir archivos de configuración con contraseñas, archivos `.env`, bases de datos locales ni el entorno virtual.
-- Mantener actualizado `requirements.txt` cuando se agreguen dependencias.
+- Mantener actualizados `requirements.txt` y `requirements-local.txt` cuando se agreguen dependencias.
 - Realizar pruebas antes de integrar nuevas funcionalidades.
 
 El proyecto se desarrolla de manera incremental, procurando conservar el funcionamiento de los módulos que ya han sido implementados.
