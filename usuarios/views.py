@@ -93,6 +93,7 @@ def perfil_foto(request):
         return redirect("usuarios:perfil")
 
     perfil_usuario = PerfilUsuario.objects.filter(usuario=request.user).first()
+
     foto_anterior = (
         perfil_usuario.foto.name
         if perfil_usuario and perfil_usuario.foto
@@ -105,6 +106,14 @@ def perfil_foto(request):
         instance=perfil_usuario,
     )
 
+    # DEPURACIÓN: comprobar si Django recibe la imagen
+    print("ARCHIVOS RECIBIDOS:", list(request.FILES.keys()))
+    print(
+        "IMAGEN RECIBIDA:",
+        request.FILES.get("foto").name if request.FILES.get("foto") else "NINGUNA"
+    )
+    print("FOTO ANTERIOR:", foto_anterior)
+
     if form.is_valid():
         perfil_usuario = form.save(commit=False)
         perfil_usuario.usuario = request.user
@@ -116,6 +125,16 @@ def perfil_foto(request):
             perfil_usuario.foto = None
 
         perfil_usuario.save()
+
+        # DEPURACIÓN: comprobar qué imagen quedó guardada
+        print(
+            "FOTO GUARDADA:",
+            perfil_usuario.foto.name if perfil_usuario.foto else "NINGUNA"
+        )
+        print(
+            "URL FOTO:",
+            perfil_usuario.foto.url if perfil_usuario.foto else "NINGUNA"
+        )
 
         if foto_anterior and (eliminar_foto or nueva_foto):
             default_storage.delete(foto_anterior)
