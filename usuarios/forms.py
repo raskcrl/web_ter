@@ -182,12 +182,13 @@ class FotoPerfilForm(forms.ModelForm):
         model = PerfilUsuario
         fields = ("foto",)
         widgets = {
-            "foto": forms.FileInput(
-                attrs={
-                    "class": "form-input",
-                    "accept": "image/jpeg,image/png,image/webp",
-                }
-            ),
+    "foto": forms.FileInput(
+        attrs={
+            "class": "form-input",
+            "id": "foto-perfil-input",
+            "accept": "image/jpeg,image/png,image/webp",
+    }
+),
         }
 
     def __init__(self, *args, **kwargs):
